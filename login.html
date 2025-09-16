@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - TokoBaju</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+
+<body class="bg-gray-900 text-white min-h-screen gradient-bg">
+    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8">
+            <div class="text-center">
+                <div class="mx-auto h-20 w-20 glass-icon-wrapper flex items-center justify-center">
+                    <i class="fas fa-tshirt text-3xl text-white"></i>
+                </div>
+                <h2 class="mt-6 text-3xl font-extrabold gradient-text">
+                    Admin Panel
+                </h2>
+                <p class="mt-2 text-sm text-purple-200">
+                    Masuk ke panel administrasi TokoBaju
+                </p>
+            </div>
+            <form id="loginForm" class="admin-form mt-8">
+                <div class="space-y-6">
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
+                            <i class="fas fa-lock mr-2"></i>Password
+                        </label>
+                        <div class="relative">
+                            <input id="password" name="password" type="password" required
+                                class="admin-input w-full pr-12" placeholder="Masukkan password admin">
+                            <button type="button" id="togglePassword"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white transition-colors">
+                                <i class="fas fa-eye" id="eyeIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <input id="rememberMe" name="rememberMe" type="checkbox"
+                                class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-600 rounded bg-gray-700">
+                            <label for="rememberMe" class="ml-2 block text-sm text-gray-300">
+                                Ingat saya
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <button type="submit" id="submitBtn"
+                            class="btn-primary w-full text-lg py-3 flex items-center justify-center space-x-2">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Masuk ke Admin Panel</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <div class="text-center">
+                <div class="bg-blue-500/20 backdrop-blur-sm rounded-lg p-4 border border-blue-500/30">
+                    <i class="fas fa-info-circle text-blue-400 mb-2"></i>
+                    <p class="text-sm text-blue-100">
+                        Hanya admin yang dapat mengakses panel ini.
+                        <br>Hubungi administrator sistem jika Anda memerlukan akses.
+                    </p>
+                </div>
+            </div>
+            <div class="text-center">
+                <a href="../index.html"
+                    class="inline-flex items-center space-x-2 text-purple-300 hover:text-purple-200 transition-colors">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Kembali ke Toko</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="text-center">
+            <div class="loading-spinner mx-auto mb-4"></div>
+            <p class="text-lg font-medium text-white">Memverifikasi kredensial...</p>
+        </div>
+    </div>
+    <script src="js/admin-config.js"></script>
+    <script src="js/admin-auth.js"></script>
+    <script src="js/admin-utils.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (checkAdminAuth()) {
+                window.location.href = 'index.html';
+                return;
+            }
+            initLoginPage();
+        });
+        function initLoginPage() {
+            const form = document.getElementById('loginForm');
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
+            form.addEventListener('submit', handleLoginSubmit);
+            togglePassword.addEventListener('click', function () {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+
+                eyeIcon.className = type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+            });
+            document.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    form.dispatchEvent(new Event('submit'));
+                }
+            });
+            document.getElementById('email').focus();
+        }
+        async function handleLoginSubmit(e) {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            if (!email || !password) {
+                showNotification('Harap isi email dan password', 'error');
+                return;
+            }
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `
+                <i class="fas fa-spinner fa-spin"></i>
+                <span>Memverifikasi...</span>
+            `;
+            showLoading('Memverifikasi kredensial admin...');
+            try {
+                const result = await handleAdminLogin(email, password);
+                if (result.success) {
+                    hideLoading();
+                    showNotification(`Selamat datang, ${result.user.full_name || result.user.username}!`, 'success', 2000);
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1000);
+                } else {
+                    throw new Error('Login gagal');
+                }
+            } catch (error) {
+                hideLoading();
+                console.error('Login error:', error);
+                let errorMessage = 'Terjadi kesalahan saat login';
+                if (error.message.includes('ditolak') || error.message.includes('admin')) {
+                    errorMessage = error.message;
+                } else if (error.message.includes('fetch') || error.message.includes('network')) {
+                    errorMessage = 'Tidak dapat terhubung ke server. Pastikan server berjalan.';
+                } else if (error.message.includes('credentials') || error.message.includes('Invalid')) {
+                    errorMessage = 'Email atau password salah';
+                } else if (error.message) {
+                    errorMessage = error.message;
+                }
+                showNotification(errorMessage, 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Masuk ke Admin Panel</span>
+                `;
+                document.getElementById('email').focus();
+            }
+        }
+        document.addEventListener('keydown', function (e) {
+            if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+                if (confirm('Gunakan kredensial demo? (Hanya untuk pengembangan)')) {
+                    document.getElementById('email').value = 'admin@tokobaju.com';
+                    document.getElementById('password').value = 'admin123';
+                    showNotification('Kredensial demo dimuat', 'info');
+                }
+            }
+        });
+        window.addEventListener('online', function () {
+            showNotification('Koneksi internet tersambung', 'success');
+        });
+        window.addEventListener('offline', function () {
+            showNotification('Koneksi internet terputus', 'warning');
+        });
+    </script>
+</body>
+
+</html>
+<label for="email" class="block text-sm font-medium text-gray-300 mb-2">
+    <i class="fas fa-envelope mr-2"></i>Email Admin
+</label>
+<input id="email" name="email" type="email" required class="admin-input w-full" placeholder="admin@tokobaju.com">
+</div>
+<div>
