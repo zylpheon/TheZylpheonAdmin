@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - TokoBaju</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="./styles/admin.css">
+</head>
+
+<body class="bg-gray-900 text-white">
+    <div id="sidebar" class="fixed left-0 top-0 h-full w-64 glassmorphism-sidebar transform transition-transform z-40">
+        <div class="p-6">
+            <div class="flex items-center space-x-3 mb-8">
+                <div class="glass-icon-wrapper">
+                    <i class="fas fa-crown text-2xl text-yellow-400"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold gradient-text">Admin Panel</h1>
+                    <p class="text-sm text-purple-300">TokoBaju</p>
+                </div>
+            </div>
+            <nav class="space-y-2">
+                <a href="#dashboard" class="nav-item active" data-page="dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#products" class="nav-item" data-page="products">
+                    <i class="fas fa-box"></i>
+                    <span>Produk</span>
+                </a>
+                <a href="#categories" class="nav-item" data-page="categories">
+                    <i class="fas fa-tags"></i>
+                    <span>Kategori</span>
+                </a>
+                <a href="#orders" class="nav-item" data-page="orders">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Pesanan</span>
+                </a>
+                <a href="#users" class="nav-item" data-page="users">
+                    <i class="fas fa-users"></i>
+                    <span>Pengguna</span>
+                </a>
+                <a href="#reports" class="nav-item" data-page="reports">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Laporan</span>
+                </a>
+            </nav>
+            <div class="absolute bottom-6 left-6 right-6">
+                <div class="glass-card p-4">
+                    <div class="flex items-center space-x-3">
+                        <div
+                            class="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium" id="adminName">Admin User</p>
+                            <p class="text-sm text-gray-400">Administrator</p>
+                        </div>
+                    </div>
+                    <button onclick="handleLogout()"
+                        class="w-full mt-3 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg transition-colors text-sm">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button id="mobileMenuBtn" class="fixed top-4 left-4 z-50 glass-btn p-3 rounded-xl lg:hidden">
+        <i class="fas fa-bars text-white"></i>
+    </button>
+    <div class="lg:ml-64">
+        <header class="glassmorphism-header p-4">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 id="pageTitle" class="text-2xl font-bold gradient-text">Dashboard</h1>
+                    <p class="text-gray-400">Welcome back, Admin!</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="glass-card px-4 py-2">
+                        <span class="text-sm text-gray-400">Hari ini:</span>
+                        <span class="ml-2 font-semibold" id="currentDate"></span>
+                    </div>
+                    <button class="glass-btn p-3 rounded-xl relative">
+                        <i class="fas fa-bell text-white"></i>
+                        <span
+                            class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+        <main class="p-6">
+            <div id="dashboard-content" class="page-content active">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="glass-card p-6 card-hover">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-400 text-sm">Total Produk</p>
+                                <p class="text-2xl font-bold gradient-text" id="totalProducts">0</p>
+                                <p class="text-green-400 text-sm"><i class="fas fa-arrow-up mr-1"></i>+12%</p>
+                            </div>
+                            <div class="glass-icon-wrapper bg-blue-500/20">
+                                <i class="fas fa-box text-2xl text-blue-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-card p-6 card-hover">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-400 text-sm">Total Pesanan</p>
+                                <p class="text-2xl font-bold gradient-text" id="totalOrders">0</p>
+                                <p class="text-green-400 text-sm"><i class="fas fa-arrow-up mr-1"></i>+8%</p>
+                            </div>
+                            <div class="glass-icon-wrapper bg-green-500/20">
+                                <i class="fas fa-shopping-cart text-2xl text-green-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-card p-6 card-hover">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-400 text-sm">Total Pengguna</p>
+                                <p class="text-2xl font-bold gradient-text" id="totalUsers">0</p>
+                                <p class="text-green-400 text-sm"><i class="fas fa-arrow-up mr-1"></i>+5%</p>
+                            </div>
+                            <div class="glass-icon-wrapper bg-purple-500/20">
+                                <i class="fas fa-users text-2xl text-purple-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-card p-6 card-hover">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-400 text-sm">Revenue</p>
+                                <p class="text-2xl font-bold gradient-text" id="totalRevenue">Rp 0</p>
+                                <p class="text-green-400 text-sm"><i class="fas fa-arrow-up mr-1"></i>+15%</p>
+                            </div>
+                            <div class="glass-icon-wrapper bg-yellow-500/20">
+                                <i class="fas fa-money-bill-wave text-2xl text-yellow-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="glass-card p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold">Penjualan Bulanan</h3>
+                            <select class="glass-input text-sm">
+                                <option>2024</option>
+                                <option>2023</option>
+                            </select>
+                        </div>
+                        <div class="h-64">
+                            <canvas id="salesChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="glass-card p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold">Pesanan Terbaru</h3>
+                            <a href="#orders" class="text-purple-400 hover:text-purple-300 text-sm">View All</a>
+                        </div>
+                        <div id="recentOrders" class="space-y-3">
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card p-6">
+                    <h3 class="text-lg font-semibold mb-4">Quick Actions</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <button onclick="showAddProductModal()"
+                            class="glass-btn p-4 rounded-xl text-center hover:bg-white/10 transition-colors">
+                            <i class="fas fa-plus text-2xl text-green-400 mb-2"></i>
+                            <p class="text-sm">Tambah Produk</p>
+                        </button>
+                        <button onclick="navigateToPage('orders')"
+                            class="glass-btn p-4 rounded-xl text-center hover:bg-white/10 transition-colors">
+                            <i class="fas fa-eye text-2xl text-blue-400 mb-2"></i>
+                            <p class="text-sm">Lihat Pesanan</p>
+                        </button>
+                        <button onclick="navigateToPage('users')"
+                            class="glass-btn p-4 rounded-xl text-center hover:bg-white/10 transition-colors">
+                            <i class="fas fa-user-plus text-2xl text-purple-400 mb-2"></i>
+                            <p class="text-sm">Kelola User</p>
+                        </button>
+                        <button onclick="generateReport()"
+                            class="glass-btn p-4 rounded-xl text-center hover:bg-white/10 transition-colors">
+                            <i class="fas fa-download text-2xl text-yellow-400 mb-2"></i>
+                            <p class="text-sm">Export Report</p>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="products-content" class="page-content">
+                <div class="text-center py-12">
+                    <i class="fas fa-spinner fa-spin text-3xl text-purple-400"></i>
+                    <p class="mt-4 text-gray-400">Loading products page...</p>
+                </div>
+            </div>
+            <div id="categories-content" class="page-content">
+                <div class="text-center py-12">
+                    <i class="fas fa-spinner fa-spin text-3xl text-purple-400"></i>
+                    <p class="mt-4 text-gray-400">Loading categories page...</p>
+                </div>
+            </div>
+            <div id="orders-content" class="page-content">
+                <div class="text-center py-12">
+                    <i class="fas fa-spinner fa-spin text-3xl text-purple-400"></i>
+                    <p class="mt-4 text-gray-400">Loading orders page...</p>
+                </div>
+            </div>
+            <div id="users-content" class="page-content">
+                <div class="text-center py-12">
+                    <i class="fas fa-spinner fa-spin text-3xl text-purple-400"></i>
+                    <p class="mt-4 text-gray-400">Loading users page...</p>
+                </div>
+            </div>
+            <div id="reports-content" class="page-content">
+                <div class="text-center py-12">
+                    <i class="fas fa-spinner fa-spin text-3xl text-purple-400"></i>
+                    <p class="mt-4 text-gray-400">Loading reports page...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    <div id="addProductModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold gradient-text">Tambah Produk Baru</h3>
+                <button onclick="closeModal('addProductModal')"
+                    class="text-gray-400 hover:text-white text-2xl">&times;</button>
+            </div>
+            <form id="addProductForm" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Nama Produk</label>
+                        <input type="text" id="productName" class="glass-input w-full" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Harga</label>
+                        <input type="number" id="productPrice" class="glass-input w-full" required>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Kategori</label>
+                        <select id="productCategory" class="glass-input w-full" required>
+                            <option value="">Pilih Kategori</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Stok</label>
+                        <input type="number" id="productStock" class="glass-input w-full" required>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Size</label>
+                        <select id="productSize" class="glass-input w-full" required>
+                            <option value="XS">XS</option>
+                            <option value="S">S</option>
+                            <option value="M" selected>M</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                            <option value="XXL">XXL</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Warna</label>
+                        <input type="text" id="productColor" class="glass-input w-full">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Deskripsi</label>
+                    <textarea id="productDescription" class="glass-input w-full h-24"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">URL Gambar</label>
+                    <input type="url" id="productImage" class="glass-input w-full">
+                </div>
+                <div class="flex justify-end space-x-4">
+                    <button type="button" onclick="closeModal('addProductModal')"
+                        class="px-6 py-2 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-700">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-6 py-2 gradient-bg text-white rounded-lg hover:opacity-90">
+                        Simpan Produk
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="loginModal" class="modal active">
+        <div class="modal-content max-w-md">
+            <div class="text-center mb-6">
+                <div class="glass-icon-wrapper inline-flex mb-4">
+                    <i class="fas fa-crown text-3xl text-yellow-400"></i>
+                </div>
+                <h3 class="text-2xl font-bold gradient-text">Admin Login</h3>
+                <p class="text-gray-400">Silakan masuk sebagai administrator</p>
+            </div>
+            <form id="adminLoginForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Email</label>
+                    <input type="email" id="adminEmail" class="glass-input w-full" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Password</label>
+                    <input type="password" id="adminPassword" class="glass-input w-full" required>
+                </div>
+                <button type="submit"
+                    class="w-full gradient-bg py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity">
+                    Masuk Admin Panel
+                </button>
+            </form>
+        </div>
+    </div>
+    <div id="notifications" class="fixed top-4 right-4 z-50 space-y-2"></div>
+    <script src="./scripts/config.js"></script>
+    <script src="./scripts/auth.js"></script>
+    <script src="./scripts/utils.js"></script>
+    <script src="./scripts/dashboard.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', initializeAdminApp);
+    </script>
+</body>
+
+</html>
