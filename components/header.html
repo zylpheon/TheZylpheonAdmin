@@ -1,0 +1,52 @@
+<header class="glassmorphism-navbar bg-gray-800 shadow-lg">
+    <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center">
+                <button id="sidebarToggle" class="lg:hidden text-white mr-4">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <h2 id="pageTitle" class="text-2xl font-bold gradient-text">Dashboard</h2>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="hidden md:flex items-center space-x-4">
+                    <div class="text-sm text-gray-300">
+                        <i class="fas fa-clock mr-1"></i>
+                        <span id="currentTime"></span>
+                    </div>
+                    <div class="text-sm text-gray-300">
+                        <i class="fas fa-calendar mr-1"></i>
+                        <span id="currentDate"></span>
+                    </div>
+                </div>
+                <span class="text-sm text-gray-300">Selamat datang, <span id="adminName"
+                        class="font-semibold">Admin</span></span>
+                <button id="logoutBtn"
+                    class="glass-btn bg-red-500/20 hover:bg-red-500/30 text-red-300 px-4 py-2 rounded-lg transition-colors">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+<script>
+    function updateDateTime() {
+        const now = new Date();
+        const timeElement = document.getElementById('currentTime');
+        const dateElement = document.getElementById('currentDate');
+
+        if (timeElement) {
+            timeElement.textContent = now.toLocaleTimeString('id-ID');
+        }
+
+        if (dateElement) {
+            dateElement.textContent = now.toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+    }
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+</script>

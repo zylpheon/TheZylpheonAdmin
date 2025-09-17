@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Pesanan - Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+
+<body class="bg-gray-900 text-white">
+    <div id="sidebar"
+        class="fixed inset-y-0 left-0 z-50 w-64 bg-gray-800 transform -translate-x-full transition-transform lg:translate-x-0 lg:static lg:inset-0">
+        <div class="flex items-center justify-center h-20 shadow-md glassmorphism-navbar">
+            <div class="flex items-center space-x-3">
+                <div class="glass-icon-wrapper">
+                    <i class="fas fa-tshirt text-xl text-white"></i>
+                </div>
+                <h1 class="text-xl font-bold gradient-text">Admin Panel</h1>
+            </div>
+        </div>
+        <nav class="mt-8">
+            <div class="px-4 space-y-2">
+                <a href="index.html" class="sidebar-link flex items-center px-4 py-3 rounded-lg transition-colors">
+                    <i class="fas fa-home mr-3"></i>
+                    Dashboard
+                </a>
+                <a href="products.html" class="sidebar-link flex items-center px-4 py-3 rounded-lg transition-colors">
+                    <i class="fas fa-box mr-3"></i>
+                    Produk
+                </a>
+                <a href="categories.html" class="sidebar-link flex items-center px-4 py-3 rounded-lg transition-colors">
+                    <i class="fas fa-tags mr-3"></i>
+                    Kategori
+                </a>
+                <a href="orders.html"
+                    class="sidebar-link active flex items-center px-4 py-3 rounded-lg transition-colors">
+                    <i class="fas fa-shopping-cart mr-3"></i>
+                    Pesanan
+                </a>
+                <a href="users.html" class="sidebar-link flex items-center px-4 py-3 rounded-lg transition-colors">
+                    <i class="fas fa-users mr-3"></i>
+                    Pengguna
+                </a>
+            </div>
+        </nav>
+    </div>
+    <div class="lg:pl-64 flex flex-col flex-1">
+        <header class="glassmorphism-navbar bg-gray-800 shadow-lg">
+            <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <button id="sidebarToggle" class="lg:hidden text-white mr-4">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        <h2 class="text-2xl font-bold gradient-text">Manajemen Pesanan</h2>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm text-gray-300">Selamat datang, <span id="adminName"
+                                class="font-semibold">Admin</span></span>
+                        <button id="logoutBtn"
+                            class="glass-btn bg-red-500/20 hover:bg-red-500/30 text-red-300 px-4 py-2 rounded-lg transition-colors">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main class="flex-1 p-6">
+            <div class="search-filter-bar mb-6">
+                <div
+                    class="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
+                    <div class="flex items-center space-x-4">
+                        <button id="refreshBtn" class="btn-secondary">
+                            <i class="fas fa-refresh mr-2"></i>
+                            Refresh
+                        </button>
+                        <div class="bg-gray-700 px-4 py-2 rounded-lg">
+                            <span class="text-sm text-gray-300">Total Pesanan: </span>
+                            <span id="totalOrdersCount" class="font-semibold text-white">0</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4 w-full lg:w-auto">
+                        <div class="relative flex-1 lg:w-64">
+                            <i
+                                class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" id="orderSearchInput" placeholder="Cari pesanan..."
+                                class="admin-input pl-10 w-full">
+                        </div>
+                        <select id="orderStatusFilter" class="admin-input">
+                            <option value="">Semua Status</option>
+                            <option value="pending">Menunggu</option>
+                            <option value="processing">Diproses</option>
+                            <option value="shipped">Dikirim</option>
+                            <option value="delivered">Selesai</option>
+                            <option value="cancelled">Dibatalkan</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="admin-table">
+                <table class="w-full">
+                    <thead>
+                        <tr>
+                            <th class="cursor-pointer" onclick="sortOrders('id')">
+                                <div class="flex items-center">
+                                    ID Pesanan
+                                    <i class="fas fa-sort ml-2 text-xs"></i>
+                                </div>
+                            </th>
+                            <th class="cursor-pointer" onclick="sortOrders('customer_name')">
+                                <div class="flex items-center">
+                                    Pelanggan
+                                    <i class="fas fa-sort ml-2 text-xs"></i>
+                                </div>
+                            </th>
+                            <th class="cursor-pointer" onclick="sortOrders('total_amount')">
+                                <div class="flex items-center">
+                                    Total
+                                    <i class="fas fa-sort ml-2 text-xs"></i>
+                                </div>
+                            </th>
+                            <th class="cursor-pointer" onclick="sortOrders('status')">
+                                <div class="flex items-center">
+                                    Status
+                                    <i class="fas fa-sort ml-2 text-xs"></i>
+                                </div>
+                            </th>
+                            <th>Alamat</th>
+                            <th>Items</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                    </tbody>
+                </table>
+            </div>
+            <div id="orderPaginationContainer"></div>
+        </main>
+    </div>
+    <script src="js/admin-config.js"></script>
+    <script src="js/admin-auth.js"></script>
+    <script src="js/admin-utils.js"></script>
+    <script src="js/admin-orders.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (!requireAdmin()) return;
+            initOrdersPage();
+        });
+        function initOrdersPage() {
+            setupOrderEventListeners();
+            loadOrdersData();
+        }
+        function setupOrderEventListeners() {
+            document.getElementById('sidebarToggle').addEventListener('click', toggleSidebar);
+            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+            document.getElementById('refreshBtn').addEventListener('click', loadOrdersData);
+            document.getElementById('orderSearchInput').addEventListener('input', debounce(handleOrderSearch, 300));
+            document.getElementById('orderStatusFilter').addEventListener('change', handleOrderStatusFilter);
+        }
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        }
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+    </script>
+</body>
+
+</html>
