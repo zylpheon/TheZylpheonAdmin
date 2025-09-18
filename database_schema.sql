@@ -1,9 +1,6 @@
--- TokoBaju Database Schema
--- Run this file first to create all tables
-
--- Create database (optional, can be created manually)
--- CREATE DATABASE tokobaju CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
--- USE tokobaju;
+-- Create database
+CREATE DATABASE tokobaju CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE tokobaju;
 
 -- Drop tables if they exist (for fresh installation)
 DROP TABLE IF EXISTS cart;
